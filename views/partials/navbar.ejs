@@ -1,0 +1,31 @@
+<nav class="navbar navbar-dark navbar-expand-lg bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand text-light" href="/">RecipeBook</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02" aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0 ">
+          <% if(!loggedin){ %> 
+            <li class="nav-item">
+                <a href="/signup" class="nav-link">Sign Up</a>
+            </li>
+            <li class="nav-item">
+                <a href="/login" class="nav-link">Log In</a>
+            </li>
+            <% } %> 
+        </ul>
+        <% if(loggedin) {%>
+          <button type="button" class="btn btn-outline-light mx-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+            Add Recipe
+          </button>
+          <form class="d-flex" role="search">
+            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-light" type="submit">Search</button>
+          </form>
+          <a href="/logout" class="btn btn-outline-danger mx-2">Log Out</a>
+        <% } %>
+      </div>
+    </div>
+  </nav>
+

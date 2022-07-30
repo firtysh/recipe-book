@@ -1,0 +1,42 @@
+<div class="container mt-5 p-5 border border-2 rounded border-primary">
+  <% if(page==='signup' ) { %>
+    <div class="text-primary pb-3 fs-1 text-decoration-underline">SIGN UP</div>
+    <form method="POST" action="/signup">
+      <div class="mb-3">
+        <label for="name" class="form-label text-primary">Full Name</label>
+        <input name="name_signup"type="text" class="form-control" id="name" placeholder="E.g : John Doe" required>
+      </div>
+      <div class="mb-3">
+        <label for="email" class="form-label text-primary">Email Address</label>
+        <input name="email_signup"type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+        <div id="emailHelp" class="form-text">Enter your email address.</div>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label text-primary">Password</label>
+        <input name="password_signup" type="password" class="form-control" id="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary">Sign Up</button>
+      <span class="px-3 ">Already have an account ? <a href="/login" class="text-primary">Log In here...</a> </span>
+    </form>
+    <% } else if(page==='login' ){ %>
+      <div class="text-primary pb-3 fs-1 text-decoration-underline">LOG IN</div>
+      <form method="POST" action="/login">
+        <div class="mb-3">
+          <label for="email" class="form-label text-primary">Email Address</label>
+          <input name="email_login"type="email" class="form-control" id="email" aria-describedby="emailHelp" required>
+          <div id="emailHelp" class="form-text">Enter the registered email address.</div>
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label text-primary">Password</label>
+          <input name="password_login" type="password" class="form-control" id="password" required>
+        </div>
+        <div class="mb-3 form-check">
+          <input name="remember_login" type="checkbox" class="form-check-input" id="remember">
+          <label class="form-check-label" for="remember">Remember Me</label>
+        </div>
+        <button type="submit" class="btn btn-primary">Log In</button>
+        <span class="px-3 ">Dont have an account ? <a href="/signup" class="text-primary">Sign Up here...</a> </span>
+      </form>
+      <% } %>
+
+</div>

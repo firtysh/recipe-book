@@ -1,0 +1,53 @@
+<!-- Modal -->
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title text-primary" id="staticBackdropLabel">Add Recipe</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <form action="/addrecipe" method="POST" enctype="multipart/form-data">
+          <div class="modal-body">
+              <div class="mb-3">
+                <label for="title" class="form-label text-primary">Title</label>
+                <input name="title" type="text" class="form-control" id="title" aria-describedby="titileHelp" required>
+                <div id="titleHelp" class="form-text">Enter the name of the dish 🤤</div>
+              </div>
+              <div class="mb-3">
+                <label for="desc" class="form-label text-primary">Description</label>
+                <input name="desc" type="text" class="form-control" id="desc" required>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vegornonveg" id="veg" value="veg" required>
+                <label class="form-check-label" for="veg">Vegetarian</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vegornonveg" id="nonveg" value="nonveg" required>
+                <label class="form-check-label" for="nonveg">Non Vegetarian</label>
+              </div>
+              <div class="my-3">
+                <label for="ingredients" class="form-label text-primary">Ingredients</label>
+                <input name="ingredients" type="text" class="form-control" id="ingredients" aria-describedby="ingredientsHelp" required>
+                <div id="ingredientsHelp" class="form-text">Enter the ingredients separated by comma (,).</div>
+              </div>
+              <div class="mb-3">
+                <label for="instruction" class="form-label text-primary">Instructions</label>
+                <textarea name="instructions" class="form-control" id="instruction" rows="4" style="resize: none;" required></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="notes" class="form-label text-primary">Notes</label>
+                <textarea name="notes" class="form-control" id="notes" rows="3" style="resize: none;"></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="image" class="form-label text-primary">Upload an image</label>
+                <input name="image" class="form-control" type="file" id="image">
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Add</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
