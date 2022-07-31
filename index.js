@@ -7,6 +7,7 @@ const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
+const fs = require("fs");
 
 //require schemas
 const User = require("./models/user");
@@ -17,10 +18,7 @@ const port = process.env.PORT || 4000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(__dirname + "/public"));
 app.use(cookieParser());
-app.use("/css", express.static(__dirname + "/node_modules/bootstrap/dist/css"));
-app.use("/js", express.static(__dirname + "/node_modules/bootstrap/dist/js"));
 app.use(express.static(__dirname + "/uploads"));
 
 //template engine setup
@@ -38,9 +36,12 @@ mongoose.connect(process.env.MONGODB_URI,{useNewUrlParser: true,useUnifiedTopolo
 // get Routes
 app.get("/", async (req, res) => {
     if(req.cookies.token){
-        if(jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
+        if(jwt.verify(req.cookies.token,process.env.JWT_SECRET) && await User.findById(jwt.decode(req.cookies.token)._id)!==null){
             loggedin=true;
             let recipes = await Recipe.find({userid:jwt.decode(req.cookies.token)._id})
+            if(req.query.search){
+                recipes = recipes.filter(recipe=>{return recipe.title.toLowerCase().includes(req.query.search.toLowerCase()) || recipe.ingredients.toLowerCase().includes(req.query.search.toLowerCase())});
+            }
             res.render('main',{loggedin:loggedin,recipes:recipes});
         }else{
             loggedin=false;
@@ -73,9 +74,30 @@ app.get('/logout',(req,res)=>{
 app.get("/recipe/:id",async (req, res) => {
     try {
         if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
+            loggedin=true;
             const recipe = await Recipe.findById(req.params.id);
+            console.log(recipe._id);
+            res.render("main", {loggedin:loggedin,recipe:recipe,page: "recipe"});
+        }else{
+            res.redirect("/login");
+        }
+    } catch (error) {
+        
+    }
+})
+app.get('/delete/:id',async (req,res)=>{
+    try {
+        if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
+            loggedin=true;
+            const recipe = await Recipe.findByIdAndDelete(req.params.id);
             console.log(recipe);
-            res.render("recipe", {loggedin:loggedin,recipe:recipe});
+            if(!recipe.image.islink){
+            fs.unlink(`${__dirname}/uploads/${recipe.image.url}`,(err)=>{
+                console.log(err ? `${err}` : `${recipe.image.url} deleted`);})
+            }
+            res.redirect("/");
+        }else{
+            res.redirect("/login");
         }
     } catch (error) {
         
@@ -108,8 +130,6 @@ app.post("/signup", async (req, res) => {
 app.post('/login',async (req,res)=>{
     try{
         const [email,password] = [req.body.email_login,req.body.password_login];
-        console.log(req.body.password_login);
-        console.log(email,password);
         const user = await User.findOne({email}).lean();
         if(user===null){
             res.render("main", { loggedin: loggedin, page: "login", error: "No User Found !!" });
@@ -142,7 +162,7 @@ app.post('/addrecipe',upload.single('image'),async (req,res)=>{
             if(img===''){
                 image ={
                     islink:true,
-                    url : 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60'
+                    url : 'https://source.unsplash.com/random/?food'
                 }
             }else{
                 image ={
@@ -160,8 +180,37 @@ app.post('/addrecipe',upload.single('image'),async (req,res)=>{
         console.log(error);
     }
 })
-app.post('/editrecipe',upload.single('image'),async (req,res)=>{})
-app.post('/deleterecipe',async (req,res)=>{})
+app.post('/editrecipe',upload.single('image'),async (req,res)=>{
+    try{
+        if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
+            const [_id,title,desc,vegornonveg,ingredients,instructions,notes,img] = [req.body.id,req.body.title,req.body.desc,req.body.vegornonveg,req.body.ingredients,req.body.instructions,req.body.notes,req?.file?.filename ];
+            let image;
+            console.log(_id,title,desc,vegornonveg,ingredients,instructions,notes,img);
+            if(img==='' || img===undefined){
+                const recipe = await Recipe.findByIdAndUpdate(_id,{title,desc,vegornonveg,ingredients,instructions,notes});
+                console.log(recipe);
+                res.redirect('/');
+            }else{
+                image ={
+                    islink:false,
+                    url : img
+                }
+                const recipe = await Recipe.findByIdAndUpdate(_id,{title,desc,vegornonveg,ingredients,instructions,notes,image});
+                if(!recipe.image.islink){
+                    fs.unlink(`${__dirname}/uploads/${recipe.image.url}`,(err)=>{
+                        console.log(err ? `${err}` : `${recipe.image.url} deleted`);})
+                    }
+                res.redirect('/');
+            }
+            
+        }else{
+            res.status(401).send("Unauthorized");
+        }
+    }
+    catch(error){
+        console.log(error);
+    }
+})
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

@@ -1,0 +1,91 @@
+<div class="modal fade show" id="" tabindex="-1" aria-labelledby="exampleModalFullscreenLabel" style="display: block"
+  aria-modal="true" role="dialog">
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-body p-5">
+        <div class="card border-primary mb-3">
+          <img src="<% if(!recipe.image.islink) {%>../<%} %><%=recipe.image.url%> " style="width:100%; height:20rem; object-fit:cover;"
+            class="card-img-top" alt="...">
+          <div class="card-body">
+            <form method="POST" action="/editrecipe" enctype="multipart/form-data" id="edit_recipe_form"  >
+              <input type="text" name="id" value="<%=recipe._id%>" hidden>
+              <div class="mb-3">
+                <label for="title" class="form-label text-primary">Title</label>
+                <input name="title" type="text" class="form-control" id="title" value="<%= recipe.title  %> " readonly
+                  required />
+              </div>
+              <div class="mb-3">
+                <label for="desc" class="form-label text-primary">Description</label>
+                <textarea name="desc" type="text" class="form-control" id="desc" readonly
+                  required><%= recipe.desc %></textarea>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vegornonveg" <% if(recipe.vegornonveg==='veg' ){%>
+                checked <% } %> id="veg"
+                  value="veg" readonly required>
+                  <label class="form-check-label" for="veg">Veg</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="vegornonveg" <% if(recipe.vegornonveg==='nonveg' ){%>
+                checked <% } %> id="nonveg"
+                  value="nonveg" readonly required>
+                  <label class="form-check-label" for="nonveg">Non-Veg</label>
+              </div>
+              <div class="my-3">
+                <label for="ingredients" class="form-label text-primary">Ingredients</label>
+                <input name="ingredients" type="text" class="form-control" value="<%=   recipe.ingredients %>"
+                  id="ingredients" readonly required />
+              </div>
+              <div class="mb-3">
+                <label for="instruction" class="form-label text-primary">Instructions</label>
+                <textarea name="instructions" class="form-control" id="instruction" rows="4" readonly
+                  required><%= recipe.instructions %></textarea>
+              </div>
+              <div class="mb-3">
+                <label for="notes" class="form-label text-primary">Notes</label>
+                <textarea name="notes" class="form-control" id="notes" readonly rows="3"
+                  style="resize: none"><%= recipe.notes %></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label text-primary">Upload an image</label>
+                <input name="image" class="form-control" type="file" disabled id="edit_image" aria-describedby="imageHelp"/>
+                <div id="imageHelp" class="form-text">Leave it blank if you dont want to edit the image.</div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <a type="button" class="btn btn-secondary" href="/">Close</a>
+        <button type="button" id="edit_recipe_button" class="btn btn-primary">
+          Edit
+        </button>
+        <a type="button" id="delete_recipe_button" class="btn btn-danger"
+          href="/delete/<%= recipe._id  %> ">Delete</a>
+        <button type="button" id="save_edit_button" class="btn btn-success" hidden>
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+  <script>
+    const edit_recipe_button = document.getElementById('edit_recipe_button');
+    const save_edit_button = document.getElementById('save_edit_button');
+    const delete_recipe_button = document.getElementById('delete_recipe_button');
+    const form = document.getElementById("edit_recipe_form");
+    edit_recipe_button.onclick=function () {
+      edit_recipe_button.hidden = true;
+      save_edit_button.hidden = false;
+      delete_recipe_button.hidden = true;
+      const elements = form.elements;
+      for (var i = 0, len = elements.length; i < len; ++i) {
+        elements[i].readOnly = false;
+      }
+      document.getElementById("edit_image").disabled = false;
+    };
+    save_edit_button.onclick= function(){
+      form.submit();
+    }
+
+  </script>
+</div>

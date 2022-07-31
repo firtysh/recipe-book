@@ -16,11 +16,11 @@
             <% } %> 
         </ul>
         <% if(loggedin) {%>
-          <button type="button" class="btn btn-outline-light mx-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
+          <button id="add_recipe_button" type="button" class="btn btn-outline-light mx-2" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
             Add Recipe
           </button>
-          <form class="d-flex" role="search">
-            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+          <form id="search"  class="d-flex" role="search" action="/">
+            <input class="form-control me-2" name="search" type="search" placeholder="Search" aria-label="Search">
             <button class="btn btn-outline-light" type="submit">Search</button>
           </form>
           <a href="/logout" class="btn btn-outline-danger mx-2">Log Out</a>
