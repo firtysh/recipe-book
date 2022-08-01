@@ -39,7 +39,6 @@ app.get("/", async (req, res) => {
         if(jwt.verify(req.cookies.token,process.env.JWT_SECRET) && await User.findById(jwt.decode(req.cookies.token)._id)!==null){
             loggedin=true;
             let recipes = await Recipe.find({userid:jwt.decode(req.cookies.token)._id})
-            console.log(recipes);
             if(req.query.search){
                 recipes = recipes.filter(recipe=>{return recipe.title.toLowerCase().includes(req.query.search.toLowerCase()) || recipe.ingredients.toLowerCase().includes(req.query.search.toLowerCase())});
             }
@@ -54,7 +53,6 @@ app.get("/", async (req, res) => {
     }
 });
 app.get("/login", (req, res) => {
-    console.log(req.cookies);
     if(loggedin === true){
         res.redirect("/");
     }else{
@@ -77,7 +75,6 @@ app.get("/recipe/:id",async (req, res) => {
         if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
             loggedin=true;
             const recipe = await Recipe.findById(req.params.id);
-            console.log(recipe._id);
             res.render("main", {loggedin:loggedin,recipe:recipe,page: "recipe"});
         }else{
             res.redirect("/login");
@@ -91,7 +88,6 @@ app.get('/delete/:id',async (req,res)=>{
         if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
             loggedin=true;
             const recipe = await Recipe.findByIdAndDelete(req.params.id);
-            console.log(recipe);
             if(!recipe.image.islink){
             fs.unlink(`${__dirname}/uploads/${recipe.image.url}`,(err)=>{
                 console.log(err ? `${err}` : `${recipe.image.url} deleted`);})
@@ -114,7 +110,6 @@ app.post("/signup", async (req, res) => {
       req.body.email_signup,
       await bcrypyt.hash(req.body.password_signup, 10),
     ];
-    console.log(name, email, password);
     const user = await User.create({ name, email, password });
     const token = jwt.sign({_id:user._id,name:user.name},process.env.JWT_SECRET);
     loggedin = true;
@@ -197,10 +192,8 @@ app.post('/editrecipe',upload.single('image'),async (req,res)=>{
         if(req.cookies.token && jwt.verify(req.cookies.token,process.env.JWT_SECRET)){
             const [_id,title,desc,vegornonveg,ingredients,instructions,notes,img] = [req.body.id,req.body.title,req.body.desc,req.body.vegornonveg,req.body.ingredients,req.body.instructions,req.body.notes,req?.file?.filename ];
             let image;
-            console.log(_id,title,desc,vegornonveg,ingredients,instructions,notes,img);
             if(img==='' || img===undefined){
                 const recipe = await Recipe.findByIdAndUpdate(_id,{title,desc,vegornonveg,ingredients,instructions,notes});
-                console.log(recipe);
                 res.redirect('/');
             }else{
                 image ={
